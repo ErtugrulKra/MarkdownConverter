@@ -8,11 +8,9 @@ import uvicorn
 import urllib.parse
 import pdfkit
 
-conf = pdfkit.configuration()
 
 #Windows geliştirme yaparken burası zorunludur.
-if sys.platform.startswith('wim32'):
-    conf = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+conf = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
 
 
 app = FastAPI()
@@ -45,10 +43,12 @@ def markdown_post(content: str):
 def markdown_post(content: str):
     temp_html = markdown.markdown(content)
 
-    pdf_file = pdfkit.from_string(temp_html,configuration=conf)
+    pdf_file = pdfkit.from_string(temp_html,configuration=conf,options={
+        'encoding': 'UTF-8'
+    })
 
     return StreamingResponse(BytesIO(pdf_file),media_type='application/pdf')
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
